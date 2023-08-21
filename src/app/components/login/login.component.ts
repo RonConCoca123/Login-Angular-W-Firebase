@@ -21,8 +21,8 @@ export class LoginComponent {
     private router: Router){
 
     this.loginUsuario = this.fb.group({
-      email: ['', Validators.required],
-      password: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
     })
   }
 
@@ -32,7 +32,12 @@ export class LoginComponent {
     
     this.spinner= true;
     this.afAuth.signInWithEmailAndPassword(email,password).then((user)=>{
-      this.router.navigate(['/dashboard']);
+      console.log(user);
+      if(user.user?.emailVerified){
+         this.router.navigate(['/dashboard']);
+      }else{
+        this.router.navigate(['/verificar-correo']);
+      }
     }).catch((error) => {
       console.log(error);
       this.spinner=false;
@@ -43,18 +48,21 @@ export class LoginComponent {
   firebaseError(code: string){
     switch(code){
       case FireBaseCodeErrorEnum.WrongPassword:
-        return this.errorAlerta('La contraseña es incorrecta');
+        return this.errorAlerta('La contraseña es incorrecta','X');
       case FireBaseCodeErrorEnum.UserNotFound:
-        return this.errorAlerta('Usuario no encontrado')
+        return this.errorAlerta('Usuario no encontrado','X');
+      case FireBaseCodeErrorEnum.InvalidEmail:
+        return this.errorAlerta('Correo Invalido o vacio','X');
     }
   }
 
   //Alertas
-  errorAlerta(message: string){
-    this._snackBar.open(message,'X',{
+  errorAlerta(message: any, type: string){
+    this._snackBar.open(message,type,{
       duration: 3000,
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
+      panelClass:['mat-toolbar', 'red-snackbar'],
     })
   }
 }

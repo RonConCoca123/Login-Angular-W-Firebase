@@ -5,4 +5,5 @@ export enum FireBaseCodeErrorEnum{
     InvalidPassword='auth/invalid-password',
     WrongPassword='auth/wrong-password',
     UserNotFound='auth/user-not-found',
+    MissingEmail='auth/missing-email',
 }
